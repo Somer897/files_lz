@@ -61,3 +61,26 @@ plt.title("Гистограмма количества букв")
 
 #показ графика
 plt.show()
+
+#save
+doc.save('lion.docx')
+
+#create document
+dox = docx.Document()
+
+#create here table
+table = dox.add_table(rows = 2, cols = 3)
+
+#give style to the table
+table.style = 'Table Grid'
+
+#give data to cells of the table
+table.cell(0, 0).text = "Слово"
+table.cell(0, 1).text = "Количество повторений"
+table.cell(0, 2).text = "% от остальных слов"
+table.cell(1, 0).text = str(word)
+table.cell(1, 1).text = str(kol)
+table.cell(1, 2).text = str(percent)
+
+#save document
+dox.save('Word.docx')
