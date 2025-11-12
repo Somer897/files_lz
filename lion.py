@@ -1,5 +1,6 @@
 import docx
 import matplotlib.pyplot as plt
+import pandas as pd
 
 #открытие файла
 doc = docx.Document('lion.docx')
@@ -7,8 +8,11 @@ doc = docx.Document('lion.docx')
 #где будет находиться текст
 text = []
 
-#списокдля букв
+#список для букв
 letters = {}
+
+#список для слов
+words = {}
 
 #чтение текста
 for paragraph in doc.paragraphs:
@@ -19,21 +23,22 @@ full_text = '\n'.join(text)
 
 #перевод букв на строчный тип
 full_text = full_text.lower()
-
+word_text = full_text.split()
 #удаление ненужных символов
 punc = '/?!.,"«»[](){}-–:;—_1234567á890äâѵ°ȃ=ôęï―ç…όù*îö№üóûòêèàé’'
 for i in range(0, len(punc)) :
     if punc[i] in full_text: 
         full_text = full_text.replace(punc[i], '')
 
+#цикл для нахождения слов в тексте
+for i in word_text:
+    #если слово есть в словаре - счетчик накручивается
+    if i in words:
+        words[i] += 1
+        #если слова нету, то добавляет его в словарь
+    else:
+        words.update({i:1})
 
-#счетчик слов
-#задаем искомое слово
-word = str(input('какое ваше слово: '))
-#находим количество слов
-kol = full_text.count(word)
-#вычисляем процент использвания
-percent = ((kol / len(full_text))*100)
 
 #цикл для нахождения букв в тексте
 #"влезаем" в слова в тексте
@@ -65,22 +70,23 @@ plt.show()
 #save
 doc.save('lion.docx')
 
-#create document
-dox = docx.Document()
+#создаем списки для слов, количества встреч в "раз" и в %
+word = [] 
+kol = []  
+percent = [] 
 
-#create here table
-table = dox.add_table(rows = 2, cols = 3)
+#заполняем эти списки с помощью нашего словаря
+for key in words.keys(): 
+    kol.append(words[key])
+    word.append(key)
+    #высчитываем процент встреч слов
+    percent.append(int(words[key])/len(words)*100)
 
-#give style to the table
-table.style = 'Table Grid'
+#делаем словарь с помощью этих 3 списков
+slovli = {'Слово': word, 'Частота встречи, раз' : kol, 'Частота встречи в %' : percent}
 
-#give data to cells of the table
-table.cell(0, 0).text = "Слово"
-table.cell(0, 1).text = "Количество повторений"
-table.cell(0, 2).text = "% от остальных слов"
-table.cell(1, 0).text = str(word)
-table.cell(1, 1).text = str(kol)
-table.cell(1, 2).text = str(percent)
+#переделываем список в таблицу
+table = pd.DataFrame(slovli)
 
-#save document
-dox.save('Word.docx')
+#выводим таблицу
+print(table)
